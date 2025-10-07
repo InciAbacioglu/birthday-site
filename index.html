@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🎂 Sürpriz! Doğum Günün Kutlu Olsun Adilisko!</title>
+    <meta
+      name="description"
+      content="Sürpriz mesaj kartı, geri sayım, fotoğraf galerisi, konfeti, müzik ve anı notları ile mükemmel doğum günü sitesi"
+    />
+    <link rel="preload" as="audio" href="assets/music.mp3" />
+    <style>
+      :root {
+        --bg: #0b0c10;
+        --panel: #12141a;
+        --card: #171920;
+        --text: #f6f7fb;
+        --muted: #9aa3b2;
+        --accent: #ff71b8;
+        --accent-2: #7dd3fc;
+        --ok: #4ade80;
+        --warn: #fbbf24;
+        --error: #fb7185;
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+        --radius: 22px;
+        --glass: rgba(255, 255, 255, 0.06);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Inter, "Helvetica Neue", Arial;
+        background: radial-gradient(
+            1200px 600px at 80% -10%,
+            rgba(255, 113, 184, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 500px at 10% 30%,
+            rgba(125, 211, 252, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #0b0c10, #0d0e13 40%, #0b0c10);
+        color: var(--text);
+        line-height: 1.55;
+        overflow-x: hidden;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      /* Header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: saturate(160%) blur(10px);
+        background: linear-gradient(
+          180deg,
+          rgba(15, 15, 18, 0.85),
+          rgba(15, 15, 18, 0.4)
+        );
+        border-bottom: 1px solid var(--glass);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px 18px;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+      }
+      .brand .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        box-shadow: 0 0 24px rgba(255, 113, 184, 0.6);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--glass);
+        background: #0f1013;
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #0b0b0e;
+        border-color: transparent;
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+
+      /* Hero */
+      .hero {
+        min-height: 88dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px 18px 40px;
+      }
+      .hero-inner {
+        display: grid;
+        gap: 22px;
+        text-align: center;
+      }
+      .eyebrow {
+        color: var(--muted);
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(34px, 6.2vw, 60px);
+        margin: 0;
+        line-height: 1.05;
+      }
+      .sub {
+        max-width: 720px;
+        margin: 0 auto;
+        color: #d2d7e0;
+      }
+
+      /* Countdown */
+      .countdown {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .timebox {
+        min-width: 86px;
+        padding: 10px 12px;
+        border-radius: 16px;
+        background: var(--card);
+        border: 1px solid var(--glass);
+        box-shadow: var(--shadow);
+      }
+      .num {
+        font-size: 32px;
+        font-weight: 900;
+      }
+      .lab {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      /* Flip Card */
+      .flip {
+        perspective: 1400px;
+        margin: 8px auto 12px;
+        width: min(680px, 92vw);
+        height: 340px;
+      }
+      .flip-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .flip.open .flip-inner {
+        transform: rotateY(180deg);
+      }
+      .side {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, #1b1d23, #14161b);
+        border: 1px solid var(--glass);
+        box-shadow: var(--shadow);
+        backface-visibility: hidden;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .side.front {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 113, 184, 0.18),
+          rgba(125, 211, 252, 0.16)
+        );
+      }
+      .side.back {
+        transform: rotateY(180deg);
+      }
+      .big-emoji {
+        font-size: 56px;
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+      }
+      .open-btn {
+        margin-top: 14px;
+        border: 1px solid var(--glass);
+        background: #0f1013;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.25s transform, 0.25s background;
+      }
+      .open-btn:hover {
+        transform: translateY(-2px);
+        background: #161820;
+      }
+
+      /* Scroll hint */
+      .scroll-hint {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .mouse {
+        width: 22px;
+        height: 34px;
+        border-radius: 12px;
+        border: 2px solid var(--muted);
+        position: relative;
+      }
+      .wheel {
+        width: 3px;
+        height: 6px;
+        background: var(--muted);
+        border-radius: 2px;
+        position: absolute;
+        left: 50%;
+        top: 6px;
+        transform: translateX(-50%);
+        animation: wheel 1.8s infinite;
+      }
+      @keyframes wheel {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, 0);
+        }
+        40% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, 10px);
+        }
+      }
+
+      /* Sticky note */
+      .sticky {
+        position: sticky;
+        top: 70px;
+        max-width: 740px;
+        margin: 30px auto;
+        background: linear-gradient(180deg, #1e2128, #16181f);
+        border: 1px solid var(--glass);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+      .sticky h3 {
+        margin: 6px 6px 10px;
+        font-size: 20px;
+      }
+      .sticky p {
+        margin: 6px;
+        color: #cfd6e3;
+      }
+
+      /* Memories / Photos */
+      section.memories {
+        padding: 30px 0 90px;
+      }
+      .grid {
+        columns: 1;
+        column-gap: 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 18px;
+      }
+      @media (min-width: 720px) {
+        .grid {
+          columns: 2;
+        }
+      }
+      @media (min-width: 1024px) {
+        .grid {
+          columns: 3;
+        }
+      }
+      .card {
+        break-inside: avoid;
+        margin: 0 0 16px 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--card);
+        border: 1px solid var(--glass);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+        transition: 0.6s ease;
+      }
+      .card.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      .card img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+      }
+      .cap {
+        padding: 10px 14px;
+        color: #e7eaf1;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .badge {
+        font-size: 12px;
+        color: #0b0c10;
+        background: #e7eaf1;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .badge.pink {
+        background: #ffd7eb;
+      }
+      .badge.blue {
+        background: #c7eeff;
+      }
+      .note {
+        padding: 12px 14px;
+        background: #12141a;
+        border-top: 1px solid var(--glass);
+      }
+      .note textarea {
+        width: 100%;
+        min-height: 74px;
+        resize: vertical;
+        border-radius: 10px;
+        border: 1px solid var(--glass);
+        background: #0f1013;
+        color: var(--text);
+        padding: 10px;
+      }
+
+      /* Footer */
+      footer {
+        padding: 40px 18px 90px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .confetti-btn {
+        padding: 12px 16px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        border: none;
+        font-weight: 800;
+        color: #0a0b0e;
+        cursor: pointer;
+      }
+
+      /* Canvas layer for confetti + blur lock */
+      #fx {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .locked {
+        filter: blur(8px);
+        pointer-events: none;
+        user-select: none;
+      }
+
+      /* Modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: rgba(10, 11, 14, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 60;
+      }
+      .modal.open {
+        display: grid;
+      }
+      .sheet {
+        width: min(460px, 92vw);
+        background: #14171e;
+        border: 1px solid var(--glass);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+      .sheet h3 {
+        margin: 0 0 10px;
+      }
+      .field {
+        display: flex;
+        gap: 8px;
+      }
+      .field input {
+        flex: 1;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--glass);
+        background: #0f1013;
+        color: var(--text);
+      }
+
+      .pill {
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--glass);
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="fx" aria-hidden="true"></canvas>
+
+    <div id="lockArea">
+      <header>
+        <div class="wrap nav">
+          <div class="brand"><span class="dot"></span> NICE SENELERE!!</div>
+          <div class="actions">
+            <button class="btn" id="musicBtn" aria-pressed="false">
+              ▶️ Müzik
+            </button>
+
+            <a class="btn primary" href="#fotograflar">Fotoğraflara İn</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-label="Açılış">
+          <div class="hero-inner">
+            <span class="eyebrow">Bugün özel bir gün ✨</span>
+            <h1>Doğum Günün Kutlu Olsun <span id="isim">Adilisko!</span> 🎉</h1>
+            <p class="sub">
+              Kartı çevir, mesajımı oku; geri sayım sıfırlanınca otomatik
+              konfeti patlayacak. Aşağı indikçe fotograflar tek tek belirecek.
+              💌
+            </p>
+
+            <!-- Countdown -->
+            <div
+              class="countdown"
+              id="countdown"
+              aria-live="polite"
+              title="Hedef tarih geldiğinde konfeti patlar!"
+            >
+              <div class="timebox">
+                <div class="num" id="d">00</div>
+                <div class="lab">Gün</div>
+              </div>
+              <div class="timebox">
+                <div class="num" id="h">00</div>
+                <div class="lab">Saat</div>
+              </div>
+              <div class="timebox">
+                <div class="num" id="m">00</div>
+                <div class="lab">Dakika</div>
+              </div>
+              <div class="timebox">
+                <div class="num" id="s">00</div>
+                <div class="lab">Saniye</div>
+              </div>
+              <span class="pill" id="targetLabel">Hedef: —</span>
+            </div>
+
+            <!-- Flip message card -->
+            <div class="flip" id="card">
+              <div class="flip-inner">
+                <div class="side front" role="button" aria-label="Kartı aç">
+                  <div>
+                    <div class="big-emoji">💌</div>
+                    <h2 style="margin: 10px 0 6px">Sürpriz Mesaj Kartı</h2>
+                    <p style="opacity: 0.8">Tıkla/çevir →</p>
+                  </div>
+                </div>
+                <div class="side back">
+                  <div>
+                    <h2 style="margin: 0 0 8px">
+                      Merhabalar! <span id="ad">Adilisko!</span> 💖
+                    </h2>
+                    <p
+                      style="
+                        max-width: 48ch;
+                        margin: 0 auto 8px;
+                        color: #d9deea;
+                      "
+                    >
+                      İyi ki doğdun! Nice nice mutlu, başarılı ve en az senin
+                      kadar neşeli yıllarının olmasını diliyorum. NICE SENELERE
+                      KARFESIM! 🎂🌟
+                    </p>
+                    <p style="margin: 6px 0 0; color: #b5bed1">— İnci</p>
+                    <button
+                      class="open-btn"
+                      id="confettiNow"
+                      aria-label="Konfeti yağdır"
+                    >
+                      TIKLA 🎊
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-hint">
+              <div class="mouse"><span class="wheel"></span></div>
+              Aşağı kaydır ⤵︎
+            </div>
+          </div>
+        </section>
+
+        <section class="sticky" aria-label="Not">
+          <h3>Galeri dir.</h3>
+          <p>
+            Fotoğraflar birazdan tek tek belirecek. Resim dosyalarını
+            <code>img</code> etiketlerindeki <code>src</code> yoluna koyman
+            yeterli. Her karta <em>tarih</em> ve <em>konum</em> etiketi
+            ekleyebilir
+          </p>
+        </section>
+
+        <section id="fotograflar" class="memories" aria-label="Fotoğraflar">
+          <div class="grid" id="grid">
+            <!-- ÖRNEK KARTLAR  →  src yollarını kendi görsellerinle değiştir -->
+            <article
+              class="card"
+              data-date="2019-12-20"
+              data-place="Aydın Lisesi"
+            >
+              <img src="photos/1.jpg" alt="9" loading="lazy" />
+              <div class="cap">
+                <span>9.Sınıf, senden uzun olduğum tek zaman dilimi.</span>
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz… (yalnızca bu cihazda saklanır)"
+                ></textarea>
+              </div>
+            </article>
+
+            <article
+              class="card"
+              data-date="2021-11-29"
+              data-place="Aydın Lisesi Erkekler Tuvaleti Aynası"
+            >
+              <img src="photos/2.jpg" alt="ayna" loading="lazy" />
+              <div class="cap">
+                <span>Aydın Lisesi erkekler tuvaletindeki not. </span>
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz…"
+                ></textarea>
+              </div>
+            </article>
+
+            <article
+              class="card"
+              data-date="2021-10-25"
+              data-place="Egefen Park"
+            >
+              <img src="photos/3.jpg" alt="Salıncak" loading="lazy" />
+              <div class="cap">
+                <span>Salıncakta sallanırkene. </span>
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz…"
+                ></textarea>
+              </div>
+            </article>
+
+            <article
+              class="card"
+              data-date="2022-01-13"
+              data-place="Egefen Park"
+            >
+              <img src="photos/4.jpg" alt="no" loading="lazy" />
+              <div class="cap">
+                <span>OOHHHHHH BU ÇİKOLATANIN TADI BASKA KARFES</span>
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz…"
+                ></textarea>
+              </div>
+            </article>
+
+            <article
+              class="card"
+              data-date="2021-03-19"
+              data-place="AYDIN LİSEM"
+            >
+              <img src="photos/5.jpg" alt="Sürpriz an" loading="lazy" />
+              <div class="cap">
+                <span>Karfesimle coğrafya sınavı öncesi.</span>
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz…"
+                ></textarea>
+              </div>
+            </article>
+
+            <article class="card" data-date="2025-06-14" data-place="MC">
+              <img src="photos/6.jpg" alt="cw" loading="lazy" />
+              <div class="cap">
+                <span
+                  >Kırk yılın başında buluşmalık mekan olarak McDonalds.</span
+                >
+                <span class="badges"></span>
+              </div>
+              <div class="note">
+                <textarea
+                  placeholder="Bu an hakkında minik bir not yaz…"
+                ></textarea>
+              </div>
+            </article>
+            <!-- İstediğin kadar article.card ekleyebilirsin -->
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>
+          Hazırlayan: <strong>İnci</strong> •
+          <button class="confetti-btn" id="confettiFooter">
+            Bir daha konfeti 🎉
+          </button>
+        </p>
+      </footer>
+    </div>
+
+    <!-- Password Modal -->
+    <div
+      class="modal"
+      id="pwModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pwTitle"
+    >
+      <div class="sheet">
+        <h3 id="pwTitle">🔐 Sürpriz Kilitli</h3>
+        <p style="margin: 6px 0 12px; color: #cfd6e3">
+          Kutlamaya erişmek için parolayı gir.
+        </p>
+        <div class="field">
+          <input id="pwInput" type="password" placeholder="Parola" />
+          <button class="btn primary" id="pwOk">Giriş</button>
+        </div>
+        <p
+          id="pwMsg"
+          style="color: var(--error); height: 18px; margin: 10px 0 0"
+        ></p>
+      </div>
+    </div>
+
+    <audio id="bgm" src="assets/music.mp3" preload="auto"></audio>
+
+    <script>
+      // ————— CONFIG —————
+      // İsteğe göre düzenle: Varsayılan hedef tarih (ISO). URL'den ?hedef=YYYY-MM-DDTHH:MM:SS ile de gelebilir.
+      let DEFAULT_TARGET = new Date();
+      DEFAULT_TARGET.setSeconds(DEFAULT_TARGET.getSeconds() + 30); // sadece 3 saniyelik geri sayım
+
+      let TARGET = DEFAULT_TARGET;
+      const PASS = ""; // İstersen buraya sabit parola yaz. Boşsa sadece URL parametresi ile çalışır.
+
+      // ————— Yardımcılar —————
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+      const qs = new URLSearchParams(location.search);
+
+      // İsim ve hedef tarih URL'den
+      const isim = qs.get("ad");
+      if (isim) {
+        $("#isim").textContent = isim;
+        $("#ad").textContent = isim;
+      }
+      const hedefStr = qs.get("hedef");
+      if (hedefStr) {
+        const t = new Date(hedefStr);
+        if (!isNaN(t)) TARGET = t;
+      }
+
+      // Hedef etiketi yaz
+      $("#targetLabel").textContent = "Hedef: " + TARGET.toLocaleString();
+
+      // ————— Kartı çevirme —————
+      const flip = $("#card");
+      flip.addEventListener("click", () => flip.classList.toggle("open"));
+
+      // ————— Konfeti —————
+      const canvas = $("#fx");
+      const ctx = canvas.getContext("2d");
+      let W,
+        H,
+        confetti = [],
+        running = false,
+        raf;
+      function resize() {
+        W = canvas.width = innerWidth;
+        H = canvas.height = innerHeight;
+      }
+      addEventListener("resize", resize);
+      resize();
+
+      function spawnConfetti(n = 160) {
+        for (let i = 0; i < n; i++) {
+          confetti.push({
+            x: Math.random() * W,
+            y: -20 - Math.random() * H,
+            r: 4 + Math.random() * 7,
+            vx: -1 + Math.random() * 2,
+            vy: 2 + Math.random() * 3.5,
+            a: Math.random() * Math.PI * 2,
+            va: -0.2 + Math.random() * 0.4,
+          });
+        }
+      }
+      function loop() {
+        ctx.clearRect(0, 0, W, H);
+        for (const p of confetti) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.a += p.va;
+          if (p.y > H + 30) {
+            p.y = -20;
+            p.x = Math.random() * W;
+          }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.a);
+          ctx.fillStyle = Math.sin(p.a * 3) > 0 ? "#ff71b8" : "#7dd3fc";
+          ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+          ctx.restore();
+        }
+        raf = requestAnimationFrame(loop);
+      }
+      function fireConfetti() {
+        spawnConfetti(240);
+        if (!running) {
+          running = true;
+          loop();
+          setTimeout(() => {
+            cancelAnimationFrame(raf);
+            running = false;
+            confetti = [];
+            ctx.clearRect(0, 0, W, H);
+          }, 3000);
+        }
+      }
+      $("#confettiNow").addEventListener("click", (e) => {
+        e.stopPropagation();
+        fireConfetti();
+      });
+      $("#confettiFooter").addEventListener("click", fireConfetti);
+
+      // ————— Müzik —————
+      const bgm = $("#bgm");
+      const musicBtn = $("#musicBtn");
+      musicBtn.addEventListener("click", async () => {
+        if (bgm.paused) {
+          try {
+            await bgm.play();
+            musicBtn.textContent = "⏸️ Durdur";
+            musicBtn.setAttribute("aria-pressed", "true");
+          } catch (e) {
+            alert("Ses başlatılamadı. Tarayıcı engelliyor olabilir.");
+          }
+        } else {
+          bgm.pause();
+          musicBtn.textContent = "▶️ Müzik";
+          musicBtn.setAttribute("aria-pressed", "false");
+        }
+      });
+
+      // ————— Countdown —————
+      const d = $("#d"),
+        h = $("#h"),
+        m = $("#m"),
+        s = $("#s");
+      function tick() {
+        const now = new Date();
+        const ms = TARGET - now;
+        if (ms <= 0) {
+          d.textContent = h.textContent = m.textContent = s.textContent = "00";
+          if (!tick.done) {
+            tick.done = true;
+            fireConfetti();
+            if (bgm.paused) {
+              bgm.play().catch(() => {});
+            }
+          }
+          return;
+        }
+        const sec = Math.floor(ms / 1000);
+        const dd = Math.floor(sec / 86400);
+        const hh = Math.floor((sec % 86400) / 3600);
+        const mm = Math.floor((sec % 3600) / 60);
+        const ss = sec % 60;
+        d.textContent = String(dd).padStart(2, "0");
+        h.textContent = String(hh).padStart(2, "0");
+        m.textContent = String(mm).padStart(2, "0");
+        s.textContent = String(ss).padStart(2, "0");
+      }
+      tick();
+      setInterval(tick, 1000);
+
+      // ————— Scroll görünüm animasyonu + rozet doldurma —————
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("show");
+          });
+        },
+        { threshold: 0.12 }
+      );
+      $$(".card").forEach((el) => {
+        io.observe(el);
+        decorateBadges(el);
+        initNote(el);
+      });
+
+      function decorateBadges(card) {
+        const place = card.getAttribute("data-place");
+        const date = card.getAttribute("data-date");
+        const wrap = card.querySelector(".badges");
+        wrap.innerHTML = "";
+        if (date) {
+          const ds = new Date(date + "T00:00:00");
+          const nice = isNaN(ds) ? date : ds.toLocaleDateString();
+          const b = document.createElement("span");
+          b.className = "badge pink";
+          b.textContent = nice;
+          wrap.appendChild(b);
+        }
+        if (place) {
+          const b = document.createElement("span");
+          b.className = "badge blue";
+          b.textContent = place;
+          wrap.appendChild(b);
+        }
+      }
+
+      // ————— Notları localStorage'a kaydet —————
+      function keyFor(card) {
+        return (
+          "note:" +
+          (card.querySelector("img")?.getAttribute("src") || Math.random())
+        );
+      }
+      function initNote(card) {
+        const ta = card.querySelector("textarea");
+        const key = keyFor(card);
+        ta.value = localStorage.getItem(key) || "";
+        ta.addEventListener("input", () => localStorage.setItem(key, ta.value));
+      }
+
+      // ————— Paylaş butonu: mevcut ayarlarla link oluştur —————
+      $("#shareBtn").addEventListener("click", async () => {
+        const url = new URL(location.href);
+        if (isim) url.searchParams.set("ad", isim);
+        else url.searchParams.delete("ad");
+        url.searchParams.set("hedef", TARGET.toISOString().slice(0, 19));
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          alert("Bağlantı kopyalandı!");
+        } catch {
+          prompt("Kopyalayamadım, manuel kopyala:", url.toString());
+        }
+      });
+
+      // ————— Parola Koruması —————
+      const wantPw = qs.get("pw") || PASS;
+      if (wantPw) {
+        const modal = $("#pwModal");
+        const input = $("#pwInput");
+        const ok = $("#pwOk");
+        const msg = $("#pwMsg");
+        const area = $("#lockArea");
+        modal.classList.add("open");
+        area.classList.add("locked");
+        ok.addEventListener("click", check);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") check();
+        });
+        function check() {
+          if (input.value === wantPw) {
+            modal.classList.remove("open");
+            area.classList.remove("locked");
+            msg.textContent = "";
+          } else {
+            msg.textContent = "Parola hatalı 🤐";
+          }
+        }
+        setTimeout(() => input.focus(), 50);
+      }
+    </script>
+  </body>
+</html>
